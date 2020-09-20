@@ -51,6 +51,14 @@ def takeSnapshot(self):
 		cv2.imwrite(p, self.frame.copy())
 		print("[INFO] saved {}".format(filename))
 
+def onClose(self):
+		# set the stop event, cleanup the camera, and allow the rest of
+		# the quit process to continue
+		print("[INFO] closing...")
+		self.stopEvent.set()
+		self.vs.stop()
+		self.root.quit()
+
 class AnafiGUI:
 	def __init__(self, vs, outputPath):
 		# store the video stream object and output path, then initialize

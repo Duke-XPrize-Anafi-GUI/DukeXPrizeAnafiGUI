@@ -1,8 +1,8 @@
+import numpy as np
 import time
 import cv2
-#import cv2, time
 
-# creating object -> Zero for external drone camera
+#creating object -> Zero for external drone camera
 video = cv2.VideoCapture(0)
 
 while True:
