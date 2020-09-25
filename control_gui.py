@@ -41,14 +41,14 @@ leftbutton=Button(controlFrame, image = left_photoImg)
 leftbutton.place(relwidth=0.075, relheight=0.1, relx = 0.5, rely=0.4)
 
 #right button
-right_button_image = Image.open("Right_button.png")
+right_button_image = Image.open("Right_Button.png")
 right_img = right_button_image.resize((BUTTON_WIDTH, BUTTON_HEIGHT), Image.ANTIALIAS)
 right_photoImg =  ImageTk.PhotoImage(right_img)
 rightbutton=Button(controlFrame, image = right_photoImg)
 rightbutton.place(relwidth=0.075, relheight=0.1, relx = 0.7, rely=0.4)
 
 #top button
-top_button_image = Image.open("Up_button.png")
+top_button_image = Image.open("Up_Button.png")
 top_img = top_button_image.resize((BUTTON_WIDTH, BUTTON_HEIGHT), Image.ANTIALIAS)
 top_photoImg =  ImageTk.PhotoImage(top_img)
 topbutton=Button(controlFrame, image = top_photoImg)
