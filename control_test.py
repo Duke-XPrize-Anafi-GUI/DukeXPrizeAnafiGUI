@@ -26,7 +26,6 @@ if __name__ == "__main__":
         >> FlyingStateChanged(state="hovering", _timeout=5)
     ).wait().success()
     assert drone(
-        moveBy(10, 0, 0, 0)
         >> FlyingStateChanged(state="hovering", _timeout=5)
     ).wait().success()
     
