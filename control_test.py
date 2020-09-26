@@ -14,14 +14,17 @@ DRONE_IP = "192.168.42.1"
 # Test values
 roll = 0
 pitch = 0
-yaw = 10
+yaw = 1
 gaz = 0
 piloting_time = 2
 
 if __name__ == "__main__":
+    # Connect to drone using IP (same for all ANAFI units)
     drone = olympe.Drone(DRONE_IP)
     drone.connect()
+    # Takeoff sequence
     assert drone(
+        # Wait for takeoff to complete before resuming execution
         TakeOff()
         >> FlyingStateChanged(state="hovering", _timeout=5)
     ).wait().success()
@@ -29,14 +32,14 @@ if __name__ == "__main__":
         moveBy(0, 0, 0, 0)
         >> FlyingStateChanged(state="hovering", _timeout=5)
     ).wait().success()
-    
+    # Begin manual control of drone 
     start_piloting()
-    
+    # Spin drone on axis 
     piloting_pcmd(roll, pitch, yaw, gaz, piloting_time)
-    
+    # End manual control 
     stop_piloting()
     
-    
+    # Issue land command and wait for success message before disconnecting
     assert drone(Landing()).wait().success()
     drone.disconnect()
 
