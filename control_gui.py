@@ -6,12 +6,12 @@ import olympe
 import subprocess
 import time
 from olympe.messages.ardrone3.Piloting import TakeOff, Landing, PCMD
-from pynput.keyboard import Listener, Key, KeyCode
 from collections import defaultdict
 from enum import Enum
 
 # Drone constants
 DRONE_IP = "192.168.42.1"
+SPHINX_IP = "10.202.0.1"
 
 # UI Global variables
 HEIGHT = 600
@@ -24,6 +24,19 @@ ROTATE_BUTTON_HEIGHT = 400
 # Control variables
 control_quit = 0
 control_takeoff = 1
+
+# Button helper functions 
+def move_right():
+    drone(
+        PCMD(
+            0,
+            0,
+            0,
+            0,
+            10,
+            10,
+        )
+    )
 
 # setting up screen
 root = tk.Tk()
@@ -95,23 +108,13 @@ r_rotate_button = Button(
 r_rotate_button.place(relwidth=0.1, relheight=0.8, relx=0.8, rely=0.1)
 
 
-def move_right():
-    drone(
-        PCMD(
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-        )
-    )
+
 
 
 # Main Loop Start:
 
 if __name__ == "__main__":
-    with olympe.Drone("192.168.42.1") as drone:
+    with olympe.Drone(SPHINX_IP) as drone:
         drone.connect()
         assert drone(TakeOff()).wait().success()
         root.mainloop()
