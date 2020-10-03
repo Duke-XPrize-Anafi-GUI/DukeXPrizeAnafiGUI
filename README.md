@@ -1,4 +1,4 @@
-# DukeXPrizeAnafiGUI
+# UAS Software Control Interface - ANAFI 4K
 
 This project is the main code base for contributing to the Duke XPrize Anafi GUI Project
 
