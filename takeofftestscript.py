@@ -4,7 +4,8 @@ import olympe
 import time
 from olympe.messages.ardrone3.Piloting import TakeOff, Landing
 
-DRONE_IP = "192.168.42.1"
+# DRONE_IP = "192.168.42.1" # Real drone IP address
+DRONE_IP = "10.202.0.1" # Simulated drone IP address
 
 
 def main():

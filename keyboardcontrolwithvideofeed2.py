@@ -25,7 +25,8 @@ from pynput.keyboard import Listener, Key, KeyCode
 from collections import defaultdict
 from enum import Enum
 
-DRONE_IP = "10.202.0.1"
+# DRONE_IP = "192.168.42.1" # Real drone IP address
+DRONE_IP = "10.202.0.1" # Simulated drone IP address
 
 class Streaming(threading.Thread):
 
