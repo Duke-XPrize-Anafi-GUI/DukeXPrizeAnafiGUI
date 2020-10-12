@@ -2,6 +2,7 @@
 
 import olympe
 import time
+import opencv
 from olympe.messages.ardrone3.Piloting import TakeOff, Landing
 
 # DRONE_IP = "192.168.42.1" # Real drone IP address
