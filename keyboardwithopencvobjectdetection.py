@@ -159,7 +159,7 @@ class KeyboardCtrl(Listener):
 
 
 if __name__ == "__main__":
-    # p0 = subprocess.Popen(['sphinx', '/opt/parrot-sphinx/usr/share/sphinx/drones/anafi4k.drone::with_front_cam=1'])
+    # p0 = subprocess.Popen(['sphinx', '/opt/parrot-sphinx/usr/share/sphinx/drones/anafi4k.drone::with_front_cam=1']) # enable for simulated drone
     with olympe.Drone(DRONE_IP) as drone:
         time.sleep(3)
         drone.connection()

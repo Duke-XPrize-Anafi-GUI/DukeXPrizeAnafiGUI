@@ -47,15 +47,18 @@ img = cv2.resize(frame,(400, h))
 print(w, h)
 print(img.shape)
 
+# set fram num to 0
 frame_num = 0
+
 while ret:
-    # grab the frame from the threaded video stream and resize it
-    # to have a maximum width of 400 pixels
     frame_num += 1
+
+    # grab the frame from the threaded video stream
     ret, frame = cap.read()
 
-
+    # grab every fifteenth frame and run the model on it
     if frame_num%15==0:
+
         # grab the frame dimensions and convert it to a blob
         frame = cv2.resize(frame, (400, h))
         (w, h) = frame.shape[:2]
@@ -66,7 +69,6 @@ while ret:
         # predictions
         net.setInput(blob)
         detections = net.forward()
-        # time.sleep(5)
 
         # loop over the detections
         for i in np.arange(0, detections.shape[2]):
@@ -90,13 +92,10 @@ while ret:
                 y = startY - 15 if startY - 15 > 15 else startY + 15
                 cv2.putText(frame, label, (startX, y),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
-
         # show the output frame
         cv2.imshow("Frame", frame)
-
-
-    key = cv2.waitKey(1) & 0xFF
     # if the `q` key was pressed, break from the loop
+    key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
         break
     # update the FPS counter
