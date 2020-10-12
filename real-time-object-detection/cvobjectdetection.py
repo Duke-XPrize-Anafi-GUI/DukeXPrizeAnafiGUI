@@ -52,19 +52,21 @@ while ret:
     # grab the frame from the threaded video stream and resize it
     # to have a maximum width of 400 pixels
     frame_num += 1
-    if frame_num%30==0:
-        ret, frame = cap.read()
-        frame = cv2.resize(frame, (400, h))
+    ret, frame = cap.read()
 
+
+    if frame_num%15==0:
         # grab the frame dimensions and convert it to a blob
+        frame = cv2.resize(frame, (400, h))
         (w, h) = frame.shape[:2]
         blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)),
             0.007843, (300, 300), 127.5)
+
         # pass the blob through the network and obtain the detections and
         # predictions
         net.setInput(blob)
         detections = net.forward()
-        time.sleep(5)
+        # time.sleep(5)
 
         # loop over the detections
         for i in np.arange(0, detections.shape[2]):
@@ -91,12 +93,14 @@ while ret:
 
         # show the output frame
         cv2.imshow("Frame", frame)
-        key = cv2.waitKey(1) & 0xFF
-        # if the `q` key was pressed, break from the loop
-        if key == ord("q"):
-            break
-        # update the FPS counter
-        fps.update()
+
+
+    key = cv2.waitKey(1) & 0xFF
+    # if the `q` key was pressed, break from the loop
+    if key == ord("q"):
+        break
+    # update the FPS counter
+    fps.update()
 
 # stop the timer and display FPS information
 fps.stop()
