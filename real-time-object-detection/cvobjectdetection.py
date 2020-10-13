@@ -75,6 +75,7 @@ while ret:
             # extract the confidence (i.e., probability) associated with
             # the prediction
             confidence = detections[0, 0, i, 2]
+            
             # filter out weak detections by ensuring the `confidence` is
             # greater than the minimum confidence
             if confidence > args["confidence"]:

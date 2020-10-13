@@ -992,7 +992,7 @@ layer {
     lr_mult: 1.0
     decay_mult: 1.0
   }
-  param {
+  param {    # if the `q` key was pressed, break from the loop
     lr_mult: 2.0
     decay_mult: 0.0
   }
@@ -1356,7 +1356,7 @@ layer {
     min_size: 105.0
     max_size: 150.0
     aspect_ratio: 2.0
-    aspect_ratio: 3.0
+    aspect_ratio: 3.0    # if the `q` key was pressed, break from the loop
     flip: true
     clip: false
     variance: 0.1
@@ -1705,7 +1705,7 @@ layer {
 layer {
   name: "conv17_2_mbox_loc"
   type: "Convolution"
-  bottom: "conv17_2"
+  bottom: "conv17_2"    # if the `q` key was pressed, break from the loop
   top: "conv17_2_mbox_loc"
   param {
     lr_mult: 1.0
@@ -1907,6 +1907,6 @@ layer {
     }
     code_type: CENTER_SIZE
     keep_top_k: 100
-    confidence_threshold: 0.25
+    confidence_threshold: 0.50
   }
 }
