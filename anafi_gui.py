@@ -7,6 +7,7 @@ import threading
 import datetime
 import imutils
 import cv2
+import numpy
 import os
 
 def videoLoop(self):
