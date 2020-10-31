@@ -119,9 +119,8 @@ def takeoff():
 # Landing routine
 def land():
     # Escape if not connected to the drone
-    if not is_connected:
-        return
-    assert drone(Landing()).wait().success()
+    if is_connected:
+        assert drone(Landing()).wait().success()
     
 
 
