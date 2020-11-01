@@ -1,3 +1,5 @@
+# Environment setup commands:
+# olympe: source ~/code/parrot-groundsdk/./products/olympe/linux/env/shell
 import tkinter as tk
 from tkinter import *
 from PIL import Image
@@ -110,15 +112,17 @@ def turn_right():
 # Takeoff routine
 def takeoff():
     # Connect to the drone's Wi-Fi access point if necessary
+    global is_connected
     if not is_connected:
         drone.connect()
-        is_connected = true
+        is_connected = True
     assert drone(TakeOff()).wait().success()
         
 
 # Landing routine
 def land():
     # Escape if not connected to the drone
+    global is_connected
     if is_connected:
         assert drone(Landing()).wait().success()
     
