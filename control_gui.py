@@ -9,6 +9,8 @@ import subprocess
 import time
 from olympe.messages.ardrone3.Piloting import TakeOff, Landing, PCMD
 from collections import defaultdict
+from olympe.messages.ardrone3.PilotingSettingsState import MaxTiltChanged
+import olympe.messages.gimbal as gimbal
 # from enum import Enum
 
 # Drone flight state variables
@@ -109,6 +111,30 @@ def turn_right():
         )
     )
 
+def increase_throttle():
+    drone(
+        PCMD(
+            0,
+            0,
+            0,
+            0,
+            10,
+            10,
+        )
+    )
+
+def decrease_throttle():
+    drone(
+        PCMD(
+            0,
+            0,
+            0,
+            0,
+            -10,
+            10,
+        )
+    )
+
 # Takeoff routine
 def takeoff():
     # Connect to the drone's Wi-Fi access point if necessary
@@ -125,7 +151,31 @@ def land():
     global is_connected
     if is_connected:
         assert drone(Landing()).wait().success()
-    
+
+def move_forward():
+    print("Drone MaxTilt = ", drone.get_state(MaxTiltChanged))
+    drone(
+        gimbal.set_target(
+            gimbal_id = 0,
+            control_mode = "position",
+            yaw_frame_of_reference = "absolute",
+            yaw = 0.0,
+            pitch_frame_of_reference = "relative",
+            pitch = -10,
+            roll_frame_of_reference = "absolute",
+            roll = 0.0
+        )
+    ).wait()
+    # drone(
+    #     PCMD(
+    #         0,
+    #         0,
+    #         0,
+    #         0,
+    #         -10,
+    #         10,
+    #     )
+    # )
 
 
 
@@ -165,21 +215,21 @@ controlFrame.place(relwidth=0.9, relheight=0.7, relx=0.05, rely=0.15)
 # rightbutton = Button(controlFrame, image=right_photoImg, command=roll_right)
 # rightbutton.place(relwidth=0.075, relheight=0.1, relx=0.7, rely=0.4)
 
-# # top button
-# top_button_image = Image.open("Up_Button.png")
-# top_img = top_button_image.resize(
-#     (BUTTON_WIDTH, BUTTON_HEIGHT), Image.ANTIALIAS)
-# top_photoImg = ImageTk.PhotoImage(top_img)
-# topbutton = Button(controlFrame, image=top_photoImg, command=pitch_fwd)
-# topbutton.place(relwidth=0.075, relheight=0.1, relx=0.6, rely=0.2)
+# increase throttle button
+top_button_image = Image.open("Up_Button.png")
+top_img = top_button_image.resize(
+    (BUTTON_WIDTH, BUTTON_HEIGHT), Image.ANTIALIAS)
+top_photoImg = ImageTk.PhotoImage(top_img)
+topbutton = Button(controlFrame, image=top_photoImg, command=increase_throttle)
+topbutton.place(relwidth=0.075, relheight=0.1, relx=0.6, rely=0.2)
 
-# # down button
-# down_button_image = Image.open("Down_button.png")
-# down_img = down_button_image.resize(
-#     (BUTTON_WIDTH, BUTTON_HEIGHT), Image.ANTIALIAS)
-# down_photoImg = ImageTk.PhotoImage(down_img)
-# downbutton = Button(controlFrame, image=down_photoImg, command=pitch_back)
-# downbutton.place(relwidth=0.075, relheight=0.1, relx=0.6, rely=0.6)
+# decrease throttle button
+down_button_image = Image.open("Down_button.png")
+down_img = down_button_image.resize(
+    (BUTTON_WIDTH, BUTTON_HEIGHT), Image.ANTIALIAS)
+down_photoImg = ImageTk.PhotoImage(down_img)
+downbutton = Button(controlFrame, image=down_photoImg, command=decrease_throttle)
+downbutton.place(relwidth=0.075, relheight=0.1, relx=0.6, rely=0.6)
 
 # rotate left
 l_rotate_button_image = Image.open("Left_Rotate.png")
@@ -200,11 +250,15 @@ r_rotate_button.place(relwidth=0.1, relheight=0.8, relx=0.8, rely=0.1)
 
 # takeoff button
 takeoff_button = tk.Button(controlFrame, text ="Takeoff", command=takeoff)
-takeoff_button.place(relwidth=0.075, relheight=0.1, relx=0.5, rely=0.4)
+takeoff_button.place(relwidth=0.075, relheight=0.1, relx=.3, rely=0.1)
 
 # landing button
 landing_button = tk.Button(controlFrame, text ="Land", command=land)
-landing_button.place(relwidth=0.075, relheight=0.1, relx=0.7, rely=0.4)
+landing_button.place(relwidth=0.075, relheight=0.1, relx=.7, rely=0.1)
+
+# forward button
+forward_button = tk.Button(controlFrame, text ="Forward", command=move_forward)
+forward_button.place(relwidth=0.075, relheight=0.1, relx=.4, rely=0.3)
 
 
 # Main Loop Start:
