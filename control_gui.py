@@ -21,8 +21,8 @@ DRONE_IP = "192.168.42.1"
 SPHINX_IP = "10.202.0.1"
 
 # UI Global variables
-HEIGHT = 600
-WIDTH = 800
+HEIGHT = 720
+WIDTH = 1280
 BUTTON_WIDTH = 50
 BUTTON_HEIGHT = 50
 ROTATE_BUTTON_WIDTH = 70
@@ -183,64 +183,31 @@ def move_forward():
 root = tk.Tk()
 root.resizable(False, False)
 root.title("Anafi Drone GUI")
+root.configure(bg='white')
 
 canvas = tk.Canvas(root, height=HEIGHT, width=WIDTH)
+canvas.configure(bg='white')
 canvas.pack()
 
-title = tk.Label(canvas, text="Flight Controller v1",
-                 font=('Century', 20), anchor='center')
-title.place(relx=0.15, rely=0.02, relwidth=0.7, relheight=0.1)
-
 controlFrame = tk.Frame(root)
-controlFrame.place(relwidth=0.9, relheight=0.7, relx=0.05, rely=0.15)
+controlFrame.configure(bg='white')
+controlFrame.place(relwidth=.95, relheight=.95, relx=0.025, rely=0.025)
 
 # # setting up the slider
 # var = DoubleVar()
 # scale = Scale(controlFrame, variable=var, from_=50, to=-50)
 # scale.place(relwidth=0.2, relheight=0.9, relx=0.3, rely=0.05)
 
-# # left button
-# left_button_image = Image.open("Left_button.png")
-# left_img = left_button_image.resize(
-#     (BUTTON_WIDTH, BUTTON_HEIGHT), Image.ANTIALIAS)
-# left_photoImg = ImageTk.PhotoImage(left_img)
-# leftbutton = Button(controlFrame, image=left_photoImg, command=roll_left)
-# leftbutton.place(relwidth=0.075, relheight=0.1, relx=0.5, rely=0.4)
-
-# # right button
-# right_button_image = Image.open("Right_Button.png")
-# right_img = right_button_image.resize(
-#     (BUTTON_WIDTH, BUTTON_HEIGHT), Image.ANTIALIAS)
-# right_photoImg = ImageTk.PhotoImage(right_img)
-# rightbutton = Button(controlFrame, image=right_photoImg, command=roll_right)
-# rightbutton.place(relwidth=0.075, relheight=0.1, relx=0.7, rely=0.4)
-
-# increase throttle button
-top_button_image = Image.open("Up_Button.png")
-top_img = top_button_image.resize(
-    (BUTTON_WIDTH, BUTTON_HEIGHT), Image.ANTIALIAS)
-top_photoImg = ImageTk.PhotoImage(top_img)
-topbutton = Button(controlFrame, image=top_photoImg, command=increase_throttle)
-topbutton.place(relwidth=0.075, relheight=0.1, relx=0.6, rely=0.2)
-
-# decrease throttle button
-down_button_image = Image.open("Down_button.png")
-down_img = down_button_image.resize(
-    (BUTTON_WIDTH, BUTTON_HEIGHT), Image.ANTIALIAS)
-down_photoImg = ImageTk.PhotoImage(down_img)
-downbutton = Button(controlFrame, image=down_photoImg, command=decrease_throttle)
-downbutton.place(relwidth=0.075, relheight=0.1, relx=0.6, rely=0.6)
-
 # rotate left
-l_rotate_button_image = Image.open("Left_Rotate.png")
-l_rotate_img = l_rotate_button_image.resize(
-    (ROTATE_BUTTON_WIDTH, ROTATE_BUTTON_HEIGHT), Image.ANTIALIAS)
-l_rotate_photoImg = ImageTk.PhotoImage(l_rotate_img)
+l_rotate_button_image = Image.open("images/turn_left.png")
+# l_rotate_img = l_rotate_button_image.resize(
+#     (ROTATE_BUTTON_WIDTH, ROTATE_BUTTON_HEIGHT), Image.ANTIALIAS)
+l_rotate_photoImg = ImageTk.PhotoImage(l_rotate_button_image)
 l_rotate_button = Button(controlFrame, image=l_rotate_photoImg, command=turn_left)
-l_rotate_button.place(relwidth=0.1, relheight=0.8, relx=0.1, rely=0.1)
+l_rotate_button.place(relwidth=.5, relheight=.5, relx=0.1, rely=0.1)
 
 # rotate right
-r_rotate_button_image = Image.open("Right_Rotate.png")
+r_rotate_button_image = Image.open("images/turn_right.png")
 r_rotate_img = r_rotate_button_image.resize(
     (ROTATE_BUTTON_WIDTH, ROTATE_BUTTON_HEIGHT), Image.ANTIALIAS)
 r_rotate_photoImg = ImageTk.PhotoImage(r_rotate_img)
@@ -256,9 +223,14 @@ takeoff_button.place(relwidth=0.075, relheight=0.1, relx=.3, rely=0.1)
 landing_button = tk.Button(controlFrame, text ="Land", command=land)
 landing_button.place(relwidth=0.075, relheight=0.1, relx=.7, rely=0.1)
 
-# forward button
-forward_button = tk.Button(controlFrame, text ="Forward", command=move_forward)
-forward_button.place(relwidth=0.075, relheight=0.1, relx=.4, rely=0.3)
+# move forward button
+forward_button_image = Image.open("images/forward.png")
+# forward_button_img = forward_button_image.resize(
+#     (ROTATE_BUTTON_WIDTH, ROTATE_BUTTON_HEIGHT), Image.ANTIALIAS)
+forward_button_photoImg = ImageTk.PhotoImage(forward_button_image)
+forward_button = Button(
+    controlFrame, image=forward_button_photoImg, command=move_forward)
+forward_button.place(relwidth=0.1, relheight=0.8, relx=0.8, rely=0.1)
 
 
 # Main Loop Start:
