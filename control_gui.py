@@ -136,13 +136,18 @@ def decrease_throttle():
         )
     )
 
-# Takeoff routine
-def takeoff():
-    # Connect to the drone's Wi-Fi access point if necessary
+# Connect to drone
+def connect():
     global is_connected
     if not is_connected:
         drone.connect()
-        is_connected = True
+    is_connected = True
+    connect_button.config(state = "disabled")
+    enable_gimbal_buttons()
+    
+
+# Takeoff routine
+def takeoff():
     assert drone(TakeOff()).wait().success()
     # Set gimbal to attitude so that it looks straight
     drone(
@@ -160,12 +165,14 @@ def takeoff():
     global gimbal_attitude
     gimbal_attitude = 0.0
 
+    takeoff_button.config(state = "disabled")
+    enable_movement_buttons()
+
 # Landing routine
 def land():
-    # Escape if not connected to the drone
-    global is_connected
-    if is_connected:
-        assert drone(Landing()).wait().success()
+    assert drone(Landing()).wait().success()
+    disable_all_buttons()
+    enable_gimbal_buttons()
 
 def move_forward():
     global gimbal_attitude
@@ -205,6 +212,13 @@ def gimbal_up():
 
     gimbal_attitude = new_attitude
 
+    if gimbal_attitude != 100:
+        takeoff_button.config(state = "disabled")
+    else:
+        takeoff_button.config(state = "normal")
+
+    land_button.config(state = "disabled")
+
 def gimbal_down():
     global gimbal_attitude
     new_attitude = gimbal_attitude - 10
@@ -215,6 +229,13 @@ def gimbal_down():
     move_gimbal(new_attitude)
 
     gimbal_attitude = new_attitude
+    
+    if gimbal_attitude != -100:
+        land_button.config(state = "disabled")
+    else:
+        land_button.config(state = "normal")
+
+    takeoff_button.config(state = "disabled")
 
 def look_forward():
     global gimbal_attitude
@@ -223,6 +244,9 @@ def look_forward():
 
     gimbal_attitude = 0
 
+    takeoff_button.config(state = "disabled")
+    land_button.config(state = "disabled")
+
 def look_up():
     global gimbal_attitude
 
@@ -230,12 +254,18 @@ def look_up():
 
     gimbal_attitude = 100
 
+    takeoff_button.config(state = "normal")
+    land_button.config(state = "disabled")
+
 def look_down():
     global gimbal_attitude
 
     move_gimbal(-100)
 
     gimbal_attitude = -100
+
+    takeoff_button.config(state = "disabled")
+    land_button.config(state = "normal")
 
 # setting up screen
 root = tk.Tk()
@@ -270,6 +300,13 @@ forward_button_photoImg = ImageTk.PhotoImage(forward_button_image)
 forward_button = Button(
     controlFrame, image=forward_button_photoImg, command=move_forward)
 forward_button.place(relwidth=0.15, relheight=0.1824, relx=0.20, rely=0.1)
+
+# connect button
+connect_button_image = Image.open("images/connect.png")
+connect_button_photoImg = ImageTk.PhotoImage(connect_button_image)
+connect_button = Button(
+    controlFrame, image=connect_button_photoImg, command=connect)
+connect_button.place(relwidth=0.2, relheight=0.1, relx=0.675, rely=.58)
 
 # takeoff button
 takeoff_button_image = Image.open("images/takeoff.png")
@@ -320,8 +357,50 @@ look_down_button = Button(
     controlFrame, image=look_down_button_photoImg, command=look_down)
 look_down_button.place(relwidth=.207, relheight=.15, relx=0.785, rely=0.41)
 
-# Main Loop Start:
+buttons = [ l_rotate_button, 
+            r_rotate_button, 
+            forward_button, 
+            takeoff_button,
+            land_button,
+            gimbal_up_button,
+            gimbal_down_button,
+            look_up_button,
+            look_forward_button,
+            look_down_button,
+            connect_button ]
 
+def disable_all_buttons():
+    global buttons
+    for button in buttons:
+        button.config(state = "disabled")
+
+def enable_all_buttons():
+    global buttons
+    for button in buttons:
+        button.config(state = "normal")
+
+def disable_gimbal_buttons():
+    look_up_button.config(state = "disabled")
+    look_down_button.config(state = "disabled")
+    look_forward_button.config(state = "disabled")
+    gimbal_up_button.config(state = "disabled")
+    gimbal_down_button.config(state = "disabled")
+
+def enable_gimbal_buttons():
+    look_up_button.config(state = "normal")
+    look_down_button.config(state = "normal")
+    look_forward_button.config(state = "normal")
+    gimbal_up_button.config(state = "normal")
+    gimbal_down_button.config(state = "normal")
+
+def enable_movement_buttons():
+    l_rotate_button.config(state = "normal")
+    r_rotate_button.config(state = "normal")
+    forward_button.config(state = "normal")
+
+# Main Loop Start:
 if __name__ == "__main__":
     with olympe.Drone(SPHINX_IP) as drone:
+        disable_all_buttons()
+        connect_button.config(state = "normal")
         root.mainloop()
