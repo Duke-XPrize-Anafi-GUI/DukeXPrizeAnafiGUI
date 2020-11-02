@@ -15,14 +15,15 @@ import olympe.messages.gimbal as gimbal
 
 # Drone flight state variables
 is_connected = False
+gimbal_attitude = 0
 
 # Drone constants
 DRONE_IP = "192.168.42.1"
 SPHINX_IP = "10.202.0.1"
 
 # UI Global variables
-HEIGHT = 720
-WIDTH = 1280
+HEIGHT = 750
+WIDTH = 830
 BUTTON_WIDTH = 50
 BUTTON_HEIGHT = 50
 ROTATE_BUTTON_WIDTH = 70
@@ -143,7 +144,21 @@ def takeoff():
         drone.connect()
         is_connected = True
     assert drone(TakeOff()).wait().success()
-        
+    # Set gimbal to attitude so that it looks straight
+    drone(
+        gimbal.set_target(
+            gimbal_id = 0,
+            control_mode = "position",
+            yaw_frame_of_reference = "absolute",
+            yaw = 0.0,
+            pitch_frame_of_reference = "absolute",
+            pitch = 0,
+            roll_frame_of_reference = "absolute",
+            roll = 0.0
+        )
+    ).wait()
+    global gimbal_attitude
+    gimbal_attitude = 0.0
 
 # Landing routine
 def land():
@@ -153,31 +168,74 @@ def land():
         assert drone(Landing()).wait().success()
 
 def move_forward():
-    print("Drone MaxTilt = ", drone.get_state(MaxTiltChanged))
+    global gimbal_attitude
+    
+    # Move straight 
+    if gimbal_attitude <= 10 and gimbal_attitude >= -10:
+        pitch_fwd()
+    # Increase throttle - move up
+    elif gimbal_attitude == 100:
+        increase_throttle()
+    # Increase throttle - move down
+    elif gimbal_attitude == -100:
+        decrease_throttle()
+    
+def move_gimbal(attitude):
     drone(
         gimbal.set_target(
             gimbal_id = 0,
             control_mode = "position",
             yaw_frame_of_reference = "absolute",
             yaw = 0.0,
-            pitch_frame_of_reference = "relative",
-            pitch = -10,
+            pitch_frame_of_reference = "absolute",
+            pitch = attitude,
             roll_frame_of_reference = "absolute",
             roll = 0.0
         )
     ).wait()
-    # drone(
-    #     PCMD(
-    #         0,
-    #         0,
-    #         0,
-    #         0,
-    #         -10,
-    #         10,
-    #     )
-    # )
 
+def gimbal_up():
+    global gimbal_attitude
+    new_attitude = gimbal_attitude + 10
 
+    if new_attitude > 100:
+        new_attitude = 100
+
+    move_gimbal(new_attitude)
+
+    gimbal_attitude = new_attitude
+
+def gimbal_down():
+    global gimbal_attitude
+    new_attitude = gimbal_attitude - 10
+
+    if new_attitude < -100:
+        new_attitude = -100
+
+    move_gimbal(new_attitude)
+
+    gimbal_attitude = new_attitude
+
+def look_forward():
+    global gimbal_attitude
+    
+    move_gimbal(0)
+
+    gimbal_attitude = 0
+
+def look_up():
+    global gimbal_attitude
+
+    move_gimbal(100)
+
+    gimbal_attitude = 100
+
+def look_down():
+    global gimbal_attitude
+
+    move_gimbal(-100)
+
+    gimbal_attitude = -100
 
 # setting up screen
 root = tk.Tk()
@@ -193,45 +251,74 @@ controlFrame = tk.Frame(root)
 controlFrame.configure(bg='white')
 controlFrame.place(relwidth=.95, relheight=.95, relx=0.025, rely=0.025)
 
-# # setting up the slider
-# var = DoubleVar()
-# scale = Scale(controlFrame, variable=var, from_=50, to=-50)
-# scale.place(relwidth=0.2, relheight=0.9, relx=0.3, rely=0.05)
-
 # rotate left
 l_rotate_button_image = Image.open("images/turn_left.png")
-# l_rotate_img = l_rotate_button_image.resize(
-#     (ROTATE_BUTTON_WIDTH, ROTATE_BUTTON_HEIGHT), Image.ANTIALIAS)
 l_rotate_photoImg = ImageTk.PhotoImage(l_rotate_button_image)
 l_rotate_button = Button(controlFrame, image=l_rotate_photoImg, command=turn_left)
-l_rotate_button.place(relwidth=.5, relheight=.5, relx=0.1, rely=0.1)
+l_rotate_button.place(relwidth=.2, relheight=.2105, relx=0, rely=0.35)
 
 # rotate right
 r_rotate_button_image = Image.open("images/turn_right.png")
-r_rotate_img = r_rotate_button_image.resize(
-    (ROTATE_BUTTON_WIDTH, ROTATE_BUTTON_HEIGHT), Image.ANTIALIAS)
-r_rotate_photoImg = ImageTk.PhotoImage(r_rotate_img)
+r_rotate_photoImg = ImageTk.PhotoImage(r_rotate_button_image)
 r_rotate_button = Button(
     controlFrame, image=r_rotate_photoImg, command=turn_right)
-r_rotate_button.place(relwidth=0.1, relheight=0.8, relx=0.8, rely=0.1)
-
-# takeoff button
-takeoff_button = tk.Button(controlFrame, text ="Takeoff", command=takeoff)
-takeoff_button.place(relwidth=0.075, relheight=0.1, relx=.3, rely=0.1)
-
-# landing button
-landing_button = tk.Button(controlFrame, text ="Land", command=land)
-landing_button.place(relwidth=0.075, relheight=0.1, relx=.7, rely=0.1)
+r_rotate_button.place(relwidth=.2, relheight=.2105, relx=0.35, rely=0.35)
 
 # move forward button
 forward_button_image = Image.open("images/forward.png")
-# forward_button_img = forward_button_image.resize(
-#     (ROTATE_BUTTON_WIDTH, ROTATE_BUTTON_HEIGHT), Image.ANTIALIAS)
 forward_button_photoImg = ImageTk.PhotoImage(forward_button_image)
 forward_button = Button(
     controlFrame, image=forward_button_photoImg, command=move_forward)
-forward_button.place(relwidth=0.1, relheight=0.8, relx=0.8, rely=0.1)
+forward_button.place(relwidth=0.15, relheight=0.1824, relx=0.20, rely=0.1)
 
+# takeoff button
+takeoff_button_image = Image.open("images/takeoff.png")
+takeoff_button_photoImg = ImageTk.PhotoImage(takeoff_button_image)
+takeoff_button = Button(
+    controlFrame, image=takeoff_button_photoImg, command=takeoff)
+takeoff_button.place(relwidth=0.22, relheight=0.28, relx=0.55, rely=.7)
+
+# land button
+land_button_image = Image.open("images/land.png")
+land_button_photoImg = ImageTk.PhotoImage(land_button_image)
+land_button = Button(
+    controlFrame, image=land_button_photoImg, command=land)
+land_button.place(relwidth=0.22, relheight=0.28, relx=0.785, rely=.7)
+
+# gimbal up button
+gimbal_up_button_image = Image.open("images/gimbal_up.png")
+gimbal_up_button_photoImg = ImageTk.PhotoImage(gimbal_up_button_image)
+gimbal_up_button = Button(
+    controlFrame, image=gimbal_up_button_photoImg, command=gimbal_up)
+gimbal_up_button.place(relwidth=.207, relheight=.2105, relx=0.56, rely=0.1)
+
+# gimbal down button
+gimbal_down_button_image = Image.open("images/gimbal_down.png")
+gimbal_down_button_photoImg = ImageTk.PhotoImage(gimbal_down_button_image)
+gimbal_down_button = Button(
+    controlFrame, image=gimbal_down_button_photoImg, command=gimbal_down)
+gimbal_down_button.place(relwidth=.207, relheight=.2105, relx=0.56, rely=0.35)
+
+# look up button
+look_up_button_image = Image.open("images/look_up.png")
+look_up_button_photoImg = ImageTk.PhotoImage(look_up_button_image)
+look_up_button = Button(
+    controlFrame, image=look_up_button_photoImg, command=look_up)
+look_up_button.place(relwidth=.207, relheight=.15, relx=0.785, rely=0.1)
+
+# look forward button
+look_forward_button_image = Image.open("images/look_forward.png")
+look_forward_button_photoImg = ImageTk.PhotoImage(look_forward_button_image)
+look_forward_button = Button(
+    controlFrame, image=look_forward_button_photoImg, command=look_forward)
+look_forward_button.place(relwidth=.207, relheight=.15, relx=0.785, rely=0.257)
+
+# look down button
+look_down_button_image = Image.open("images/look_down.png")
+look_down_button_photoImg = ImageTk.PhotoImage(look_down_button_image)
+look_down_button = Button(
+    controlFrame, image=look_down_button_photoImg, command=look_down)
+look_down_button.place(relwidth=.207, relheight=.15, relx=0.785, rely=0.41)
 
 # Main Loop Start:
 
