@@ -266,6 +266,9 @@ def look_down():
 
     takeoff_button.config(state = "disabled")
     land_button.config(state = "normal")
+    
+def video_feed():
+    p1 = subprocess.Popen(['../clones/parrot-groundsdk/out/pdraw-linux/staging/native-wrapper.sh', 'pdraw', '-u','rtsp://10.202.0.1/live'])
 
 # setting up screen
 root = tk.Tk()
