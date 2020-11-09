@@ -17,6 +17,8 @@ import olympe.messages.gimbal as gimbal
 is_connected = False
 gimbal_attitude = 0
 
+p1 = subprocess;
+
 # Drone constants
 DRONE_IP = "192.168.42.1"
 SPHINX_IP = "10.202.0.1"
@@ -88,6 +90,7 @@ def pitch_back():
 
 # Spin drone to the left 
 def turn_left():
+    display_message('Turning left...')
     drone(
         PCMD(
             1,
@@ -101,6 +104,7 @@ def turn_left():
 
 # Turn drone to the right
 def turn_right():
+    display_message('Turning right...')
     drone(
         PCMD(
             1,
@@ -140,15 +144,20 @@ def decrease_throttle():
 def connect():
     global is_connected
     if not is_connected:
+        display_message('Connecting to the drone...')
         drone.connect()
+        display_message('Connected successfully.')
     is_connected = True
     connect_button.config(state = "disabled")
+    start_fpv_button.config(state = "normal")
     enable_gimbal_buttons()
     
 
 # Takeoff routine
 def takeoff():
+    display_message('Taking off...')
     assert drone(TakeOff()).wait().success()
+    display_message('Takeoff successful')
     # Set gimbal to attitude so that it looks straight
     drone(
         gimbal.set_target(
@@ -170,7 +179,9 @@ def takeoff():
 
 # Landing routine
 def land():
+    display_message('Landing...')
     assert drone(Landing()).wait().success()
+    display_message('Landed successfully.')
     disable_all_buttons()
     enable_gimbal_buttons()
 
@@ -179,12 +190,15 @@ def move_forward():
     
     # Move straight 
     if gimbal_attitude <= 10 and gimbal_attitude >= -10:
+        display_message('Moving straight forward.')
         pitch_fwd()
     # Increase throttle - move up
     elif gimbal_attitude == 100:
+        display_message('Increasing throttle.')
         increase_throttle()
-    # Increase throttle - move down
+    # Decrease throttle - move down
     elif gimbal_attitude == -100:
+        display_message('Decreasing throttle.')
         decrease_throttle()
     
 def move_gimbal(attitude):
@@ -208,6 +222,7 @@ def gimbal_up():
     if new_attitude > 100:
         new_attitude = 100
 
+    display_message('Tilting gimbal up.')
     move_gimbal(new_attitude)
 
     gimbal_attitude = new_attitude
@@ -226,6 +241,7 @@ def gimbal_down():
     if new_attitude < -100:
         new_attitude = -100
 
+    display_message('Tilting gimbal down')
     move_gimbal(new_attitude)
 
     gimbal_attitude = new_attitude
@@ -241,6 +257,7 @@ def look_forward():
     global gimbal_attitude
     
     move_gimbal(0)
+    display_message('Gimbal facing straight ahead.')
 
     gimbal_attitude = 0
 
@@ -251,6 +268,7 @@ def look_up():
     global gimbal_attitude
 
     move_gimbal(100)
+    display_message('Gimbal facing straight up.')
 
     gimbal_attitude = 100
 
@@ -261,14 +279,20 @@ def look_down():
     global gimbal_attitude
 
     move_gimbal(-100)
+    display_message('Gimbal facing straight down.')
 
     gimbal_attitude = -100
 
     takeoff_button.config(state = "disabled")
     land_button.config(state = "normal")
     
-def video_feed():
-    p1 = subprocess.Popen(['../clones/parrot-groundsdk/out/pdraw-linux/staging/native-wrapper.sh', 'pdraw', '-u','rtsp://10.202.0.1/live'])
+def start_fpv():
+    display_message('Starting first person view video feed...')
+    p1 = subprocess.Popen(['/home/achilles/code/parrot-groundsdk/out/pdraw-linux/staging/native-wrapper.sh', 'pdraw', '-u','rtsp://10.202.0.1/live'])
+
+def display_message(message):
+    global message_box
+    message_box.insert(END, message)
 
 # setting up screen
 root = tk.Tk()
@@ -298,18 +322,25 @@ r_rotate_button = Button(
 r_rotate_button.place(relwidth=.2, relheight=.2105, relx=0.35, rely=0.35)
 
 # move forward button
-forward_button_image = Image.open("images/forward.png")
+forward_button_image = Image.open("images/move_forward.png")
 forward_button_photoImg = ImageTk.PhotoImage(forward_button_image)
 forward_button = Button(
     controlFrame, image=forward_button_photoImg, command=move_forward)
-forward_button.place(relwidth=0.15, relheight=0.1824, relx=0.20, rely=0.1)
+forward_button.place(relwidth=0.15, relheight=0.2, relx=0.20, rely=0.1)
 
 # connect button
 connect_button_image = Image.open("images/connect.png")
 connect_button_photoImg = ImageTk.PhotoImage(connect_button_image)
 connect_button = Button(
     controlFrame, image=connect_button_photoImg, command=connect)
-connect_button.place(relwidth=0.2, relheight=0.1, relx=0.675, rely=.58)
+connect_button.place(relwidth=0.2, relheight=0.1, relx=.56, rely=.58)
+
+# Start FPV button
+start_fpv_image = Image.open("images/start_fpv.png")
+start_fpv_button_photoImg = ImageTk.PhotoImage(start_fpv_image)
+start_fpv_button = Button(
+    controlFrame, image=start_fpv_button_photoImg, command=start_fpv)
+start_fpv_button.place(relwidth=0.2, relheight=0.1, relx=0.785, rely=.58)
 
 # takeoff button
 takeoff_button_image = Image.open("images/takeoff.png")
@@ -360,6 +391,11 @@ look_down_button = Button(
     controlFrame, image=look_down_button_photoImg, command=look_down)
 look_down_button.place(relwidth=.207, relheight=.15, relx=0.785, rely=0.41)
 
+message_box = Listbox(controlFrame)
+message_box.place(relwidth= .5, relheight= .35, relx= 0, rely= .6)
+
+
+
 buttons = [ l_rotate_button, 
             r_rotate_button, 
             forward_button, 
@@ -370,7 +406,8 @@ buttons = [ l_rotate_button,
             look_up_button,
             look_forward_button,
             look_down_button,
-            connect_button ]
+            connect_button,
+            start_fpv_button ]
 
 def disable_all_buttons():
     global buttons
