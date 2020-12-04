@@ -25,6 +25,38 @@ There are no current solutions to the problem we are trying to solve as it is ve
  
 Failure to implement the solution proposed by this group could lead to the total loss of the drone during the demonstration phase of the competition if a collision occurs between the drone and another object, compromising the entire project effort’s work and ability to excel in the competition.
 
+## Control Interface Diagram
+<p align="center">
+    <img src="images/control_interface_diagram.png">
+</p>
+
+### 1. Move forward
+The drone will move straight forward relative to the plane of the drone if the camera gimbal is tilted at most either 10% (relative to its available range of motion) above or below the plane of the drone. If the camera gimbal is facing straight up relative to the plane of the drone, the drone will move upwards by increasing throttle. If the camera gimbal is facing straight down relative to the plane of the drone, the drone will move downwards by decreasing throttle. 
+### 2. Tilt gimbal up
+The camera gimbal will tilt relative to the plane of the drone's frame up by 10% of its total available range of motion. If the camera is already facing straight up relative to the plane of the drone's frame, the gimbal will not move.
+### 3. Tilt gimbal straight up
+The camera gimbal will tilt straight up relative to the plane of the drone's frame if it is not already in that position. 
+### 4. Tilt gimbal straight forward 
+The camera gimbal will tilt straight forward relative to the plane of the drone's frame if it is not already in that position.
+### 5. Tilt gimbal straight down
+The camera gimbal will tilt straight down relative to the plane of the drone's frame if it is not already in that position. 
+### 6. Start first person view (FPV)
+A separate window will open to display the live video feed from the drone for first person view operation. The window can be resized. This button will have no effect if the FPV window is already open.
+### 7. Land drone 
+The drone will slowly lower itself until it reaches the ground below it. This button will have no effect unless the drone is flying and the camera is facing straight down relative to the plane of the drone's frame.  
+### 8. Takeoff
+The drone rotors will start and the drone will rise to about three feet in the air and hover in that position. This button will have no effect unless the drone is not in the air and the camera is facing straight up relative to the plane of the drone's frame.
+### 9. Connect to drone
+The controller will connect to the drone after it has been turned on or initialized in Sphinx. If a physical drone is being used, be sure to connect to the Wi-Fi network created by the drone first. Failure to do so will require the interface to be restarted if the button is pressed. 
+### 10. Tilt gimbal camera down
+The camera gimbal will tilt down relative to the drone's frame by 10% of its total available range of motion. If the camera is already facing straight down relative to the plane of the drone's frame, the gimbal will not move. 
+### 11. Turn right
+The drone will turn left by about 10 degrees. 
+### 12. Turn left
+The drone will turn right by about 10 degrees. 
+### 13. Status messages
+Messages related to the current state of the drone will be provided whenever a button on the interface is pressed, assuming that button may be used at a given time. If the box becomes filled, scroll down after clicking inside of the box to see new messages.
+
 ## Using the interface [(Live Demo)](https://youtu.be/55FwVCVg6VY)
 ### Dependencies 
 * Your computer must be running a distribution of Linux to run both the control interface and the 
