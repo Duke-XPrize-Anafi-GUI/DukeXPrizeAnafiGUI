@@ -1,4 +1,4 @@
-# UAS Software Control Interface - ANAFI 4K
+# UAS Software Control Interface - Parrot ANAFI
 
 <p align="center">
     <img src="images/team_emblem.png">
