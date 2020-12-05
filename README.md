@@ -15,7 +15,7 @@
 4. The repo maintainers will review your code and give you feedback
 
 5. If code is approved merge code into code base
-
+ 
 ## Background
 The aim of this project is to build an interface to help reduce the likelihood of collisions with objects when a drone is launched into a forest. A “critic” is required to give basic instructions to the user controlling the drone through an interface. This interface allows a less experienced pilot to leverage object-avoidance techniques possessed by more experienced pilots to help prevent a collision. This reduces the likelihood of damage to the drone in flight or the total loss of the drone. 
  
