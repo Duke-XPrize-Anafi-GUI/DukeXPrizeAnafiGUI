@@ -27,12 +27,6 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN chown -R docker /home/
 USER docker
 
-# Install Python dependencies 
-RUN pip3 install Pillow
-RUN pip3 install pynput 
-RUN pip3 install numpy
-RUN pip3 install opencv-python
-
 # Install repo
 RUN mkdir /home/docker/bin
 ENV PATH "/home/docker/bin:$PATH"
@@ -48,14 +42,30 @@ RUN echo "parrot-sphinx sphinx/license_approval boolean true" | sudo debconf-set
 RUN DEBIAN_FRONTEND=noninteractive sudo apt-get install -q -y \
 		parrot-sphinx
  
-# Install olympe
+# Install olympe dependencies
+RUN sudo apt-get -y install build-essential yasm cmake libtool libc6 libc6-dev \
+    unzip freeglut3-dev libglfw3 libglfw3-dev libsdl2-dev libjson-c-dev \
+    libcurl4-gnutls-dev libavahi-client-dev libgles2-mesa-dev
+
+RUN sudo apt-get -y install rsync
+
+RUN sudo apt-get -y install cmake libbluetooth-dev libavahi-client-dev \
+    libopencv-dev libswscale-dev libavformat-dev \
+    libavcodec-dev libavutil-dev cython python-dev python-opencv
+
+RUN pip3 install clang
+
 RUN mkdir -p /home/docker/code/parrot-groundsdk && \
     cd /home/docker/code/parrot-groundsdk && \
     repo init -u https://github.com/Parrot-Developers/groundsdk-manifest.git && \
-    repo sync && \
-    yes '1' | ./products/olympe/linux/env/postinst
+    repo sync
+
+RUN pip3 install scikit-build
+RUN pip3 install -r /home/docker/code/parrot-groundsdk/packages/olympe/requirements.txt
+RUN echo "export PYTHONPATH=\$PYTHONPATH:/home/docker/code/parrot-groundsdk/out/olympe-linux/final/usr/lib/python/site-packages/" >> /home/docker/code/parrot-groundsdk/products/olympe/linux/env/setenv
 
 
+# Build olympe-linux
 RUN cd /home/docker/code/parrot-groundsdk && \
     yes 'y' | ./build.sh -p olympe-linux -A all final -j
 
@@ -63,4 +73,4 @@ RUN sudo usermod -a -G firmwared docker
 RUN cd && \
     git clone https://github.com/Duke-XPrize-Anafi-GUI/DukeXPrizeAnafiGUI
 
-CMD  /bin/bash
+CMD  /bin/bash && cd
