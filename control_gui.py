@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Environment setup commands:
 # olympe: source ~/code/parrot-groundsdk/./products/olympe/linux/env/shell
 import tkinter as tk

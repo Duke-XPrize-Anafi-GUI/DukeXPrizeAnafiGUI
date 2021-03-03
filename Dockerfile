@@ -70,7 +70,10 @@ RUN cd && \
 
 # Need to change the version for aenum
 # Otherwise olympe will error (olympe.messages not found)
-RUN /bin/bash -c "source ~/code/parrot-groundsdk/./products/olympe/linux/env/shell; pip3 install --upgrade aenum==2.2.5; pip3 install image;"
+RUN ./home/docker/code/parrot-groundsdk/.python//py3/bin/pip3 install aenum==2.2.5
+
+# Our python dependencies
+RUN ./home/docker/code/parrot-groundsdk/.python//py3/bin/pip3 install image
 
 # Start in olympe environment
 ENTRYPOINT /bin/bash -c "cd /home/docker/DukeXPrizeAnafiGUI/; source ~/code/parrot-groundsdk/./products/olympe/linux/env/shell;"
